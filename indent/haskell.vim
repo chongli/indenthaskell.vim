@@ -29,6 +29,12 @@ if !exists('g:haskell_indent_case')
     let g:haskell_indent_case = 5
 endif
 
+if !exists('g:haskell_indent_do')
+    " do xs <- getLine
+    " >>>putStrLn xs
+    " >>>return ()
+    let g:haskell_indent_do = 3
+endif
 setlocal indentexpr=GetHaskellIndent()
 setlocal indentkeys=!^F,o,O
 
@@ -59,18 +65,6 @@ function! GetHaskellIndent()
         endif
     endif
 
-    if line !~ '\<else\>'
-        let s = match(line, '\<if\>.*\&.*\zs\<then\>')
-        if s > 0
-            return s
-        endif
-
-        let s = match(line, '\<if\>')
-        if s > 0
-            return s + g:haskell_indent_if
-        endif
-    endif
-
     let s = match(line, '\<do\s\+\zs[^{]\|\<where\s\+\zs\w\|\<let\s\+\zs\S\|^\s*\zs|\s')
     if s > 0
         return s
@@ -79,6 +73,27 @@ function! GetHaskellIndent()
     let s = match(line, '\<case\>')
     if s > 0
         return s + g:haskell_indent_case
+    endif
+
+    let s = match(line, '\<do\>')
+    if s > 0
+        return s + g:haskell_indent_do
+    endif
+
+    if line !~ '\<else\>'
+        let s = match(line, '\<if\>.*\&.*\zs\<then\>')
+        if s > 0
+            return s
+        endif
+        let s = match(line, '\<if\>')
+        if s > 0
+            return s + g:haskell_indent_if
+        endif
+    endif
+
+    let s = match(line, '\<else\>')
+    if s > 0
+        return s - g:haskell_indent_if
     endif
 
     return match(line, '\S')
