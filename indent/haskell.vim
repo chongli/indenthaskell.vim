@@ -41,6 +41,10 @@ setlocal indentkeys=!^F,o,O
 function! GetHaskellIndent()
     let line = substitute(getline(getpos('.')[1] - 1), '\t', repeat(' ', &tabstop), 'g')
 
+    if line =~ '^-- '
+        return match(line, '\S')
+    endif
+
     if line =~ '[!#$%&*+./<=>?@\\^|~-]$\|\<do$'
         return match(line, '\s*where \zs\|\S') + &shiftwidth
     endif
